@@ -1,12 +1,18 @@
-Architecture for auth -> players -> roles:
+Architecture for auth -> profiles -> roles:
     Users will sign up and log in with Supabase Auth stored in auth.users.
     We make a profiles table. Stores name and role.
-    A role is coach, player.
+    A role is coach, player, or admin (admin is an optional super-user coach).
     Profile connects to coaches table, if role == coach.
     Profile connects to players table, if role == player.
     Sessions, workouts, reps and metrics link to those.
 
 Entity Relationship Diagram:
+
+profiles
+    id - uuid, primary key, foreign key to auth.users.id
+    full_name - text
+    role - enum('coach', 'player', 'admin')
+    created_at - timestamptz, default to now()
 
 teams
     id - uuid, primary key
@@ -75,6 +81,8 @@ raw_stream_events
     created_at - timestamptz, default to now()
 
 Relationships:
+    auth.users: 1 -> 1 profiles
+
     teams: 1 -> many coaches
     teams: 1 -> many players
     teams: 1 -> many sessions
